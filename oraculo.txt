@@ -1,0 +1,10 @@
+===ORACULO===
+_tem rodas?
+__tem guidon?
+___bicicleta
+___tem duas rodas?
+____moto
+____carro
+__serve pra jogar tenis?
+___raquete
+___bola

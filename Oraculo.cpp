@@ -20,7 +20,7 @@ typedef struct arv {
 } ARVORE; 
 
 char HEADER_ARQ [] = "===ORACULO===\n";
-char NO_CHAR = '#';
+char NO_CHAR = '_';
 
 void cria_ARVORE( ARVORE** r );
 void init_ARVORE ( ARVORE** r);
@@ -132,7 +132,7 @@ ARVORE * aloca_ARVORE()
 	
 	if( no == NULL)
 	{
-		printf("\n### Estou de Memoria! ###\n");
+		printf("\n### Estouro de Memoria! ###\n");
 		exit (1);
 	}
 	else
