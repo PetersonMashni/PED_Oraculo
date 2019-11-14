@@ -29,6 +29,8 @@ void imprime_ARVORE (ARVORE* r, int pos);
 void testa_ARVORE(ARVORE * arvore);
 void salva_ARVORE(ARVORE * arvore);
 void salva_recursivo (FILE *pont_arq, ARVORE* r, int pos);
+void carrega_ARVORE(ARVORE ** arvore);
+int  carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos);
 ARVORE * aloca_ARVORE();
 char confirma(char* pergunta, char* par1, char* par2);
 
@@ -47,6 +49,7 @@ int main( void )
 	    printf( "\n | [2] Testa a Arvore                                |" );
 	    printf( "\n | [3] Imprime a Arvore                              |" );	    
     	printf( "\n | [4] Salva a Arvore                                |" );	    	    
+    	printf( "\n | [5] Carrega uma Arvore                            |" );	    	    
 		printf( "\n | [9] Para sair do programa                         |" );         
 	    printf( "\n +---------------------------------------------------+" );      
 	    printf( "\n Opcao: " );
@@ -73,6 +76,10 @@ int main( void )
                 salva_ARVORE( arvore );
                 break;
                 
+            case '5':   // rotina carrega ARVORE       
+	            carrega_ARVORE( &arvore );
+	            break;
+                
            case '9':  // término do programa                                                 
                 exit( 1 ); 
                 break;                
@@ -90,6 +97,75 @@ int main( void )
 void cria_ARVORE( ARVORE** r )
 {
     *r = NULL; 
+}
+
+void carrega_ARVORE(ARVORE ** arvore){
+	
+	char destino [256] = "oraculo.txt";
+	char linha [512];
+	
+	FILE *pont_arq;
+	
+	pont_arq = fopen(destino, "r");
+	
+	if(pont_arq == NULL)
+	{
+		printf("Erro ao abrir o arquivo '%s'!\n");
+		return;
+	}
+
+	if(fgets(linha, 512, pont_arq) == NULL)
+		printf("Erro de Leitura!\n");
+	else if(strcmp(HEADER_ARQ, linha) != 0)
+		printf("Formato de Arquivo nao Reconhecido!Erro de Leitura!\n");
+	else
+	{
+		cria_ARVORE(arvore);
+	  	if(carrega_recursivo(pont_arq, arvore, 0) == 0)
+			printf("Arquivo carregado com sucesso!\n");
+	}
+	fclose(pont_arq);
+}
+
+int carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos){
+	
+	char linha [512];
+	
+	if(fgets(linha, 512, pont_arq) == NULL)
+	{
+		printf("Erro de Leitura!\n");
+		return 1;
+	}
+		
+	pos ++;
+	
+	for(int i=0; i<pos; i++){
+		if(linha[i] != NO_CHAR)
+		{		
+			printf("Erro de formato na linha: '%s'!", linha);
+			return 1;
+		}
+			
+		*r = aloca_ARVORE();
+		
+		// falta ignorar os caractres iniciais e eliminar o enter do final da linha
+		
+		strncpy((*r)->info.informacao, linha+pos, 256);
+		
+		(*r)->info.informacao[strcspn((*r)->info.informacao, "\n")] = 0;
+		
+		printf("%s\n", (*r)->info.informacao);
+		fflush(stdin);
+		getch();
+		
+	
+    	if (carrega_recursivo(pont_arq, &((*r)->sube), pos) != 0)
+    		return 1;
+    		
+    	if(carrega_recursivo(pont_arq, &((*r)->subd), pos) != 0)
+    		return 1;
+	}
+	
 }
 
 void ramifica_ARVORE(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca)
