@@ -1,10 +1,22 @@
 ===ORACULO===
 _tem rodas?
 __tem guidon?
-___bicicleta
+___tem 3 rodas?
+____triciclo
+____tem 4 rodas?
+_____quadriciclo
+_____bicicleta
 ___tem duas rodas?
-____moto
+____e puxado por cavalo?
+_____carroca
+_____e para deficiente fisico?
+______cadeira de rodas
+______utiliza gasolina?
+_______moto
+_______hoverboard
 ____carro
 __serve pra jogar tenis?
 ___raquete
-___bola
+___e liquido?
+____cafe
+____bola

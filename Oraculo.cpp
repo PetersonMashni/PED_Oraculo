@@ -4,8 +4,6 @@
 #include <string.h>
 #include <locale.h>
 
-
-
 /***********************************************/ 
 /* Definição dos Registros                     */
 /***********************************************/ 
@@ -128,16 +126,19 @@ void carrega_ARVORE(ARVORE ** arvore){
 }
 
 int carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos){
-	
+
 	char linha [512];
-	
-	if(fgets(linha, 512, pont_arq) == NULL)
-	{
-		printf("Erro de Leitura!\n");
-		return 1;
-	}
+	fpos_t posArq;
+	fgetpos(pont_arq, &posArq);
 		
-	pos ++;
+	if(fgets(linha, 512, pont_arq) == NULL)
+		return 0;
+	
+	if( linha [pos] != NO_CHAR)
+	{
+		fsetpos(pont_arq, &posArq);
+		return 0;
+	}
 	
 	for(int i=0; i<pos; i++){
 		if(linha[i] != NO_CHAR)
@@ -145,26 +146,24 @@ int carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos){
 			printf("Erro de formato na linha: '%s'!", linha);
 			return 1;
 		}
-			
-		*r = aloca_ARVORE();
-		
-		// falta ignorar os caractres iniciais e eliminar o enter do final da linha
-		
-		strncpy((*r)->info.informacao, linha+pos, 256);
-		
-		(*r)->info.informacao[strcspn((*r)->info.informacao, "\n")] = 0;
-		
-		printf("%s\n", (*r)->info.informacao);
-		fflush(stdin);
-		getch();
-		
-	
-    	if (carrega_recursivo(pont_arq, &((*r)->sube), pos) != 0)
-    		return 1;
-    		
-    	if(carrega_recursivo(pont_arq, &((*r)->subd), pos) != 0)
-    		return 1;
 	}
+			
+	*r = aloca_ARVORE();
+	
+	// falta ignorar os caractres iniciais e eliminar o enter do final da linha
+	
+	strncpy((*r)->info.informacao, linha+pos+1, 256);
+	
+	(*r)->info.informacao[strcspn((*r)->info.informacao, "\n")] = 0;
+	
+	fflush(stdin);
+		
+	if (carrega_recursivo(pont_arq, &((*r)->sube), pos+1) != 0)
+		return 1;
+		
+	if(carrega_recursivo(pont_arq, &((*r)->subd), pos+1) != 0)
+		return 1;
+	
 	
 }
 
@@ -190,7 +189,7 @@ void ramifica_ARVORE(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca)
 	strcpy(posicao->info.informacao, diferenca);
 	strcpy(no->info.informacao, novo);
 
-	if (confirma("Esta pergunta e verdadeira para '%s'? ", novo, NULL) == 's')
+	if (confirma("Esta pergunta e verdadeira para '%s' (s/n)?", novo, NULL) == 's')
 	{
 		posicao->sube = no;
 		posicao->subd = ant;
@@ -255,7 +254,7 @@ void testa_ARVORE(ARVORE * arvore)
 			posicao = posicao->subd;
 	}
 
-	if(confirma("Ja sei! Voce pensou em '%s'. Acertei? ", posicao->info.informacao, NULL) == 's')
+	if(confirma("Ja sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL) == 's')
 		printf("Ok! Mais um ponto pra mim!\n");
 	else
 	{
