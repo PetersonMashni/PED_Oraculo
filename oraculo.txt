@@ -1,5 +1,5 @@
 ===ORACULO===
-4
+5
 _tem rodas?
 __tem guidon?
 ___tem 3 rodas?
@@ -15,11 +15,25 @@ ______cadeira de rodas
 ______utiliza gasolina?
 _______moto
 _______hoverboard
-____carro
+____leva muitos passageiros?
+_____onibus
+_____carro
 __serve pra jogar tenis?
 ___raquete
 ___e liquido?
 ____cafe
 ____tem teclado?
 _____computador
-_____bola
+_____serve para cozinhar?
+______fogao
+______e a entrada da garagem?
+_______portao
+_______recipiente para liquidos?
+________garrafa
+________tem helice?
+_________ventilador
+_________serve para varrer?
+__________vassoura
+__________tem degraus?
+___________escada
+___________bola

@@ -73,18 +73,18 @@ int main( void )
 	
 	while( 1 ){
 	    printf( "+---------------------------------------------------+\n" );
-	    printf( "| ORACULO - Uso de Arvore Binaria                   |\n" );
+	    printf( "| ORÁCULO - Uso de Árvore Binária                   |\n" );
 	    printf( "+---------------------------------------------------+\n" );
-	    printf( "| [1] Cria e Inicializa a Arvore                    |\n" );
-	    printf( "| [2] Testa a Arvore                                |\n" );
-	    printf( "| [3] Imprime a Arvore                              |\n" );
-    	printf( "| [4] Salva a Arvore em Arquivo                     |\n" );
-    	printf( "| [5] Carrega a Arvore de Arquivo                   |\n" );
+	    printf( "| [1] Cria e Inicializa a Árvore                    |\n" );
+	    printf( "| [2] Testa a Árvore                                |\n" );
+	    printf( "| [3] Imprime a Árvore                              |\n" );
+    	printf( "| [4] Salva a Árvore em Arquivo                     |\n" );
+    	printf( "| [5] Carrega a Árvore de Arquivo                   |\n" );
     	printf( "| [6] Mostrar Estatisticas                          |\n" );
 		printf( "| [9] Para sair do programa                         |\n" );
 	    printf( "+---------------------------------------------------+\n" );
 	    
-		op = confirma("Digite uma das Opcoes do Menu: ", NULL, NULL, "1234569");
+		op = confirma("Digite uma das Opções do Menu: ", NULL, NULL, "1234569");
 	    
 	    switch( op ) {
 	        case '1':   // rotina cria ARVORE       
@@ -141,6 +141,11 @@ void carregaArvore( ARVORE ** arvore ){
 	
 	FILE *pont_arq = fopen(ORA_NOME_ARQ, "r");
 	
+	if(confirma("\n Deseja carregar do arquivo (s/n)? ", NULL, NULL, "sn") != 's') {
+		printf("\n Operação cancelada!\n\n");
+		return;
+	}
+
 	if(pont_arq == NULL)
 	{
 		printf("\n Erro ao abrir o arquivo '%s'!\n", ORA_NOME_ARQ);
@@ -151,7 +156,7 @@ void carregaArvore( ARVORE ** arvore ){
 		printf("\n Erro de Leitura!\n");
 		
 	else if(strcmp(ORA_CABECALHO_ARQ, linha) != 0)
-		printf("\n Formato de Arquivo nao Reconhecido!\n");
+		printf("\n Formato de Arquivo não Reconhecido!\n");
 		
 	else {
 		if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL) 
@@ -239,7 +244,7 @@ ARVORE * aloca_ARVORE ( )
 	ARVORE * no = ( ARVORE * ) malloc ( sizeof( ARVORE ));
 	
 	if( no == NULL) {
-		printf("\n### Estouro de Memoria! ###\n");
+		printf("\n### Estouro de Memória! ###\n");
 		exit (1);
 	}
 	else {
@@ -272,32 +277,38 @@ void salvaArvore( ARVORE * arvore ) {
 	
 	fclose(pont_arq);
 	
-	printf("\n Arvore Salva com Sucesso!\n\n");
+	printf("\n Árvore Salva com Sucesso!\n\n");
 }
 
 void testaArvore ( ARVORE * arvore )
 {
 	ARVORE * posicao = arvore;
 	
-	printf("\n ... Pense em algo e press alguma tecla para continuarmos ...\n\n");
-	getch();
-			
+	printf("\n => Pense em algo e responda as perguntas: \n\n");
+	
+	int numPerg = 0;		
 	while ( posicao->sube != NULL ) {
+		
+		numPerg++;
+		
+		printf(" %d) ", numPerg);
+		
 		if (confirma("%s ", posicao->info.informacao, NULL, "sn")=='s')
 			posicao = posicao->sube;
 		else
 			posicao = posicao->subd;
+			
 	}
 
-	if(confirma("\n Ja sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL, "sn") == 's') {
+	if(confirma("\n Já sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL, "sn") == 's') {
 		printf(" \n Mais um ponto pra mim! :) \n\n");
 		acertosOraculo ++;
 	}
 	else {
 		ramificaArvore(
 			posicao, 
-			" Ok, voce venceu! Me diga em que estava pensando: ",
-			" Ta bom espertalhao! Faça uma pergunta que diferencie '%s' de '%s': "
+			" Ok, você venceu! Me diga em que estava pensando: ",
+			" Tá bom espertalhão! Faça uma pergunta que diferencie '%s' de '%s': "
 		);
 	}
 	
@@ -309,7 +320,7 @@ void iniciaArvore ( ARVORE** r )
 	
     ARVORE* no = aloca_ARVORE();
 
-	printf("\n[ Inicializando a Arvore ]\n");
+	printf("\n[ Inicializando a Árvore ]\n");
 
 	fflush(stdin);
 	printf("\n Informe algo que esteja pensando: ");
@@ -323,7 +334,7 @@ void iniciaArvore ( ARVORE** r )
 		" Informe outra coisa que esteja pensando: ",
 		" Informe uma pergunta que diferencie '%s' de '%s': ");
 		
-	printf("\n Arvore inicializado com Sucesso!\n\n");
+	printf("\n Árvore inicializada com Sucesso!\n\n");
 }
 
 void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos )
