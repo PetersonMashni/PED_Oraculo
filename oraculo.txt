@@ -1,39 +1,49 @@
 ===ORACULO===
-5
-_tem rodas?
-__tem guidon?
-___tem 3 rodas?
-____triciclo
-____tem 4 rodas?
-_____quadriciclo
-_____bicicleta
-___tem duas rodas?
-____e puxado por cavalo?
-_____carroca
-_____e para deficiente fisico?
-______cadeira de rodas
-______utiliza gasolina?
-_______moto
-_______hoverboard
-____leva muitos passageiros?
-_____onibus
-_____carro
-__serve pra jogar tenis?
-___raquete
-___e liquido?
-____cafe
-____tem teclado?
-_____computador
-_____serve para cozinhar?
-______fogao
-______e a entrada da garagem?
-_______portao
-_______recipiente para liquidos?
-________garrafa
-________tem helice?
-_________ventilador
-_________serve para varrer?
-__________vassoura
-__________tem degraus?
-___________escada
-___________bola
+1
+_tem vida?
+__pessoa?
+___famosa?
+____Silvio Santos
+____Professora Dani
+___animal?
+____mamifero?
+_____cachorro
+_____ave?
+______canario
+______reptil?
+_______jacare
+_______peixe?
+________bagre
+________camarao
+____vegetal?
+_____e uma raiz?
+______gengibre
+______arvore
+_____microorganismo?
+______bacteria
+______lobisomem
+__objeto?
+___veiculo?
+____carro
+____eletro?
+_____tv
+_____utensilio?
+______alicate
+______pneu
+___alimento?
+____massa
+____bebida?
+_____cafe
+_____mineral?
+______ouro
+______sentimento ou emocao?
+_______felicidade
+_______lugar?
+________casa
+________tem onda?
+_________tem agua?
+__________mar
+__________faz barulho?
+___________som
+___________luz
+_________raio
