@@ -41,20 +41,23 @@ int acertosOraculo;
 /*********************************************************************************************/
 /* Declaração das funções                                                                    */
 /*********************************************************************************************/
-void cria_ARVORE( ARVORE** r );
-void init_ARVORE ( ARVORE** r );
-void ramifica_ARVORE( ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca );
-void imprime_ARVORE ( ARVORE* r, int pos );
-void testa_ARVORE( ARVORE * arvore );
-void salva_ARVORE( ARVORE * arvore );
-void salva_recursivo ( FILE *pont_arq, ARVORE* r, int pos );
-void carrega_ARVORE( ARVORE ** arvore );
-int  carrega_recursivo ( FILE *pont_arq, ARVORE** r, int pos );
-int contaFolhas ( ARVORE* r);
-ARVORE * aloca_ARVORE ( );
-char confirma ( char* pergunta, char* par1, char* par2, char* opcoes );
+void criaArvore ( ARVORE** r );
+void iniciaArvore ( ARVORE** r );
+void imprimeArvore ( ARVORE* r, int pos );
+void testaArvore ( ARVORE * arvore );
+void salvaArvore ( ARVORE * arvore );
+void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos );
+void carregaArvore ( ARVORE ** arvore );
+int  carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos );
 void mostraEstatisticas ( ARVORE* r );
 
+// Funcoes de acesso direto à árvore
+void    ramificaArvore( ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca );
+int     contaFolhas ( ARVORE* r);
+ARVORE* aloca_ARVORE ( );
+
+// Funcoes auxiliares
+char confirma ( char* pergunta, char* par1, char* par2, char* opcoes );
 
 /*********************************************************************************************/
 /* Ponto de Entrada                                                                          */
@@ -85,24 +88,24 @@ int main( void )
 	    
 	    switch( op ) {
 	        case '1':   // rotina cria ARVORE       
-	            cria_ARVORE( &arvore );
-	            init_ARVORE( &arvore );
+	            criaArvore( &arvore );
+	            iniciaArvore( &arvore );
 	            break;                               
 				                      
 			case '2':   // rotina testar ARVORE       
-                testa_ARVORE( arvore );
+                testaArvore( arvore );
                 break;
                 
 			case '3':   // rotina imprime ARVORE       
-                imprime_ARVORE( arvore, 0 );
+                imprimeArvore( arvore, 0 );
                 break;
                 
             case '4':   // rotina salva ARVORE       
-                salva_ARVORE( arvore );
+                salvaArvore( arvore );
                 break;
                 
             case '5':   // rotina carrega ARVORE       
-	            carrega_ARVORE( &arvore );
+	            carregaArvore( &arvore );
 	            break;
                 
 			case '6':   // rotina carrega ARVORE       
@@ -127,12 +130,12 @@ void mostraEstatisticas ( ARVORE* r ){
 
 }
 
-void cria_ARVORE( ARVORE** r )
+void criaArvore( ARVORE** r )
 {
     *r = NULL; 
 }
 
-void carrega_ARVORE( ARVORE ** arvore ){
+void carregaArvore( ARVORE ** arvore ){
 	
 	char linha [ORA_LARG_BUFFER_ARQ];
 	
@@ -156,15 +159,15 @@ void carrega_ARVORE( ARVORE ** arvore ){
 		
 		acertosOraculo = atoi(linha);
 		
-		cria_ARVORE(arvore);
-	  	if(carrega_recursivo(pont_arq, arvore, 0) == 0)
+		criaArvore(arvore);
+	  	if(carregaRecursivo(pont_arq, arvore, 0) == 0)
 			printf("\n Arquivo carregado com sucesso!\n\n");
 	}
 	
 	fclose(pont_arq);
 }
 
-int carrega_recursivo ( FILE *pont_arq, ARVORE** r, int pos ){
+int carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos ){
 	char linha [ORA_LARG_BUFFER_ARQ];
 	fpos_t posArq;
 	fgetpos(pont_arq, &posArq);
@@ -192,15 +195,15 @@ int carrega_recursivo ( FILE *pont_arq, ARVORE** r, int pos ){
 	
 	fflush(stdin);
 		
-	if (carrega_recursivo(pont_arq, &((*r)->sube), pos+1) != 0)
+	if (carregaRecursivo(pont_arq, &((*r)->sube), pos+1) != 0)
 		return 1;
 		
-	if(carrega_recursivo(pont_arq, &((*r)->subd), pos+1) != 0)
+	if(carregaRecursivo(pont_arq, &((*r)->subd), pos+1) != 0)
 		return 1;
 	
 }
 
-void ramifica_ARVORE(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) {
+void ramificaArvore(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) {
 	char novo [ORA_LARG_INFO];
 	char diferenca [ORA_LARG_INFO];
 	
@@ -247,7 +250,7 @@ ARVORE * aloca_ARVORE ( )
 	return no;
 }
 
-void salva_ARVORE( ARVORE * arvore ) {
+void salvaArvore( ARVORE * arvore ) {
 	
 	if(confirma("\n Deseja salvar a árvore atual (s/n)? ", NULL, NULL, "sn") != 's') {
 		printf("\n Operação cancelada!\n\n");
@@ -265,14 +268,14 @@ void salva_ARVORE( ARVORE * arvore ) {
 	
 	fprintf(pont_arq, "%d\n", acertosOraculo);
 	
-	salva_recursivo(pont_arq, arvore, 0);
+	salvaRecursivo (pont_arq, arvore, 0);
 	
 	fclose(pont_arq);
 	
 	printf("\n Arvore Salva com Sucesso!\n\n");
 }
 
-void testa_ARVORE ( ARVORE * arvore )
+void testaArvore ( ARVORE * arvore )
 {
 	ARVORE * posicao = arvore;
 	
@@ -291,7 +294,7 @@ void testa_ARVORE ( ARVORE * arvore )
 		acertosOraculo ++;
 	}
 	else {
-		ramifica_ARVORE(
+		ramificaArvore(
 			posicao, 
 			" Ok, voce venceu! Me diga em que estava pensando: ",
 			" Ta bom espertalhao! Faça uma pergunta que diferencie '%s' de '%s': "
@@ -301,7 +304,7 @@ void testa_ARVORE ( ARVORE * arvore )
 }
 
 			
-void init_ARVORE ( ARVORE** r )
+void iniciaArvore ( ARVORE** r )
 {
 	
     ARVORE* no = aloca_ARVORE();
@@ -315,7 +318,7 @@ void init_ARVORE ( ARVORE** r )
 	
 	*r = no;
 	
-	ramifica_ARVORE(
+	ramificaArvore(
 		no,
 		" Informe outra coisa que esteja pensando: ",
 		" Informe uma pergunta que diferencie '%s' de '%s': ");
@@ -323,7 +326,7 @@ void init_ARVORE ( ARVORE** r )
 	printf("\n Arvore inicializado com Sucesso!\n\n");
 }
 
-void salva_recursivo ( FILE *pont_arq, ARVORE* r, int pos )
+void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos )
 {
 	pos ++;
 	if (r != NULL) {
@@ -332,13 +335,13 @@ void salva_recursivo ( FILE *pont_arq, ARVORE* r, int pos )
 			
 		fprintf(pont_arq, "%s\n", r->info.informacao);
 	
-    	salva_recursivo(pont_arq, r->sube, pos);
-    	salva_recursivo(pont_arq, r->subd, pos);
+    	salvaRecursivo(pont_arq, r->sube, pos);
+    	salvaRecursivo(pont_arq, r->subd, pos);
 	}
 }
 
 
-void imprime_ARVORE ( ARVORE* r, int pos )
+void imprimeArvore ( ARVORE* r, int pos )
 {
 	if (pos == 0)
 		printf("\n[ Visualização da Árvore ]\n");
@@ -349,8 +352,8 @@ void imprime_ARVORE ( ARVORE* r, int pos )
 			
 		printf("+%s\n", r->info.informacao);
 	
-    	imprime_ARVORE(r->sube, pos+1);
-    	imprime_ARVORE(r->subd, pos+1);
+    	imprimeArvore(r->sube, pos+1);
+    	imprimeArvore(r->subd, pos+1);
 	}
 	
 	if (pos == 0)
