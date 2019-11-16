@@ -1,4 +1,5 @@
 ===ORACULO===
+4
 _tem rodas?
 __tem guidon?
 ___tem 3 rodas?
@@ -19,4 +20,6 @@ __serve pra jogar tenis?
 ___raquete
 ___e liquido?
 ____cafe
-____bola
+____tem teclado?
+_____computador
+_____bola

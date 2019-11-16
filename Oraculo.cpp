@@ -1,14 +1,28 @@
+/*********************************************************/ 
+/* Importação das Bibliotecas Utilizados                 */
+/*********************************************************/ 
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
 
-/***********************************************/ 
-/* Definição dos Registros                     */
-/***********************************************/ 
+
+/********************************************************************************************************************************/
+/* Constantes utilizadas no Código                                                                                              */
+/********************************************************************************************************************************/
+const char ORA_CABECALHO_ARQ [] = "===ORACULO===\n";       // utilizada no cabeçalhos dos arquivos para identificação do arquivo
+const char ORA_NIVEL_CHAR = '_';                           // char utilizadado para definir o nivel de cada no arquivo
+const int  ORA_LARG_INFO = 256;                            // Largura dos valores armazenados na Arvore
+const int  ORA_LARG_BUFFER_ARQ = ORA_LARG_INFO * 2;        // Largura do buffer utilizado para leitura de linha de arquivo
+const char ORA_NOME_ARQ [] = "oraculo.txt";                // Arquivo utilizado para persistir a árvore
+
+
+/*********************************************************/ 
+/* Definição dos Registros Utilizados                    */
+/*********************************************************/ 
 typedef struct { 
-       char informacao [256];       
+       char informacao [ORA_LARG_INFO];       
 } INFORMACAO;
        
 typedef struct arv {
@@ -17,45 +31,58 @@ typedef struct arv {
        struct arv* sube;  // ponteiro para o nodo da esquerda
 } ARVORE; 
 
-char HEADER_ARQ [] = "===ORACULO===\n";
-char NO_CHAR = '_';
 
+/*********************************************************/ 
+/* Variaveis Publicas                                    */
+/*********************************************************/ 
+int acertosOraculo;
+
+
+/*********************************************************************************************/
+/* Declaração das funções                                                                    */
+/*********************************************************************************************/
 void cria_ARVORE( ARVORE** r );
-void init_ARVORE ( ARVORE** r);
-void ramifica_ARVORE(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca);
-void imprime_ARVORE (ARVORE* r, int pos);
-void testa_ARVORE(ARVORE * arvore);
-void salva_ARVORE(ARVORE * arvore);
-void salva_recursivo (FILE *pont_arq, ARVORE* r, int pos);
-void carrega_ARVORE(ARVORE ** arvore);
-int  carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos);
-ARVORE * aloca_ARVORE();
-char confirma(char* pergunta, char* par1, char* par2);
+void init_ARVORE ( ARVORE** r );
+void ramifica_ARVORE( ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca );
+void imprime_ARVORE ( ARVORE* r, int pos );
+void testa_ARVORE( ARVORE * arvore );
+void salva_ARVORE( ARVORE * arvore );
+void salva_recursivo ( FILE *pont_arq, ARVORE* r, int pos );
+void carrega_ARVORE( ARVORE ** arvore );
+int  carrega_recursivo ( FILE *pont_arq, ARVORE** r, int pos );
+int contaFolhas ( ARVORE* r);
+ARVORE * aloca_ARVORE ( );
+char confirma ( char* pergunta, char* par1, char* par2, char* opcoes );
+void mostraEstatisticas ( ARVORE* r );
 
+
+/*********************************************************************************************/
+/* Ponto de Entrada                                                                          */
+/*********************************************************************************************/
 int main( void )
 {
-	ARVORE * arvore;
+	ARVORE * arvore = NULL;
 	char op;
 	
-	setlocale(LC_ALL, "pt_BR.iso-8859-1");
+	acertosOraculo = 0;
+	
+	setlocale(LC_ALL, "Portuguese");
 	
 	while( 1 ){
-	    printf( "\n +---------------------------------------------------+" ); 
-	    printf( "\n | ORACULO - Uso de Arvore Binaria                   |" );
-	    printf( "\n +---------------------------------------------------+" ); 
-	    printf( "\n | [1] Cria e Inicializa a Arvore                    |" );
-	    printf( "\n | [2] Testa a Arvore                                |" );
-	    printf( "\n | [3] Imprime a Arvore                              |" );	    
-    	printf( "\n | [4] Salva a Arvore                                |" );	    	    
-    	printf( "\n | [5] Carrega uma Arvore                            |" );	    	    
-		printf( "\n | [9] Para sair do programa                         |" );         
-	    printf( "\n +---------------------------------------------------+" );      
-	    printf( "\n Opcao: " );
+	    printf( "+---------------------------------------------------+\n" );
+	    printf( "| ORACULO - Uso de Arvore Binaria                   |\n" );
+	    printf( "+---------------------------------------------------+\n" );
+	    printf( "| [1] Cria e Inicializa a Arvore                    |\n" );
+	    printf( "| [2] Testa a Arvore                                |\n" );
+	    printf( "| [3] Imprime a Arvore                              |\n" );
+    	printf( "| [4] Salva a Arvore em Arquivo                     |\n" );
+    	printf( "| [5] Carrega a Arvore de Arquivo                   |\n" );
+    	printf( "| [6] Mostrar Estatisticas                          |\n" );
+		printf( "| [9] Para sair do programa                         |\n" );
+	    printf( "+---------------------------------------------------+\n" );
 	    
-	    fflush( stdin ); // limpa buffer do teclado, funciona junto com entrada de dados
-	    op = getche(); // tecla de opção do menu
-	    printf( "\n" );
-	
+		op = confirma("Digite uma das Opcoes do Menu: ", NULL, NULL, "1234569");
+	    
 	    switch( op ) {
 	        case '1':   // rotina cria ARVORE       
 	            cria_ARVORE( &arvore );
@@ -78,13 +105,14 @@ int main( void )
 	            carrega_ARVORE( &arvore );
 	            break;
                 
+			case '6':   // rotina carrega ARVORE       
+	            mostraEstatisticas ( arvore );
+	            break;
+				                
            case '9':  // término do programa                                                 
                 exit( 1 ); 
                 break;                
                    
-           default : 
-                printf( "\n Digite uma opcao!" );
-                break;
         } // switch( op )
 	        
     } // fim do while( 1 )
@@ -92,57 +120,65 @@ int main( void )
 	return 0;
 } 
 
+void mostraEstatisticas ( ARVORE* r ){
+	
+	printf("\n Palavras Aprendidas.: %d", contaFolhas(r));
+	printf("\n Meus Acertos........: %d\n\n", acertosOraculo);
+
+}
+
 void cria_ARVORE( ARVORE** r )
 {
     *r = NULL; 
 }
 
-void carrega_ARVORE(ARVORE ** arvore){
+void carrega_ARVORE( ARVORE ** arvore ){
 	
-	char destino [256] = "oraculo.txt";
-	char linha [512];
+	char linha [ORA_LARG_BUFFER_ARQ];
 	
-	FILE *pont_arq;
-	
-	pont_arq = fopen(destino, "r");
+	FILE *pont_arq = fopen(ORA_NOME_ARQ, "r");
 	
 	if(pont_arq == NULL)
 	{
-		printf("Erro ao abrir o arquivo '%s'!\n");
+		printf("\n Erro ao abrir o arquivo '%s'!\n", ORA_NOME_ARQ);
 		return;
 	}
 
-	if(fgets(linha, 512, pont_arq) == NULL)
-		printf("Erro de Leitura!\n");
-	else if(strcmp(HEADER_ARQ, linha) != 0)
-		printf("Formato de Arquivo nao Reconhecido!Erro de Leitura!\n");
-	else
-	{
+	if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL) 
+		printf("\n Erro de Leitura!\n");
+		
+	else if(strcmp(ORA_CABECALHO_ARQ, linha) != 0)
+		printf("\n Formato de Arquivo nao Reconhecido!\n");
+		
+	else {
+		if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL) 
+			printf("\n Erro de Leitura!\n");
+		
+		acertosOraculo = atoi(linha);
+		
 		cria_ARVORE(arvore);
 	  	if(carrega_recursivo(pont_arq, arvore, 0) == 0)
-			printf("Arquivo carregado com sucesso!\n");
+			printf("\n Arquivo carregado com sucesso!\n\n");
 	}
+	
 	fclose(pont_arq);
 }
 
-int carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos){
-
-	char linha [512];
+int carrega_recursivo ( FILE *pont_arq, ARVORE** r, int pos ){
+	char linha [ORA_LARG_BUFFER_ARQ];
 	fpos_t posArq;
 	fgetpos(pont_arq, &posArq);
 		
-	if(fgets(linha, 512, pont_arq) == NULL)
+	if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL)
 		return 0;
 	
-	if( linha [pos] != NO_CHAR)
-	{
+	if( linha [pos] != ORA_NIVEL_CHAR) {
 		fsetpos(pont_arq, &posArq);
 		return 0;
 	}
 	
-	for(int i=0; i<pos; i++){
-		if(linha[i] != NO_CHAR)
-		{		
+	for(int i=0; i<pos; i++) {
+		if(linha[i] != ORA_NIVEL_CHAR) {		
 			printf("Erro de formato na linha: '%s'!", linha);
 			return 1;
 		}
@@ -150,9 +186,7 @@ int carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos){
 			
 	*r = aloca_ARVORE();
 	
-	// falta ignorar os caractres iniciais e eliminar o enter do final da linha
-	
-	strncpy((*r)->info.informacao, linha+pos+1, 256);
+	strncpy((*r)->info.informacao, linha+pos+1, ORA_LARG_INFO);
 	
 	(*r)->info.informacao[strcspn((*r)->info.informacao, "\n")] = 0;
 	
@@ -164,22 +198,20 @@ int carrega_recursivo (FILE *pont_arq, ARVORE** r, int pos){
 	if(carrega_recursivo(pont_arq, &((*r)->subd), pos+1) != 0)
 		return 1;
 	
-	
 }
 
-void ramifica_ARVORE(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca)
-{
-	char novo [256];
-	char diferenca [256];
+void ramifica_ARVORE(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) {
+	char novo [ORA_LARG_INFO];
+	char diferenca [ORA_LARG_INFO];
 	
 	fflush(stdin);
 	printf(msgNovo);
-	fgets(novo, 256, stdin);
+	fgets(novo, ORA_LARG_INFO, stdin);
 	novo[strcspn(novo, "\n")] = 0;
 	
 	fflush(stdin);
 	printf(msgPerguntaDiferenca, novo, posicao->info.informacao);
-	fgets(diferenca, 256, stdin);
+	fgets(diferenca, ORA_LARG_INFO, stdin);
 	diferenca[strcspn(diferenca, "\n")] = 0;
 				
 	ARVORE * no = aloca_ARVORE();
@@ -189,110 +221,114 @@ void ramifica_ARVORE(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca)
 	strcpy(posicao->info.informacao, diferenca);
 	strcpy(no->info.informacao, novo);
 
-	if (confirma("Esta pergunta e verdadeira para '%s' (s/n)?", novo, NULL) == 's')
-	{
+	if (confirma(" Esta pergunta e verdadeira para '%s' (s/n)?", novo, NULL, "sn") == 's') {
 		posicao->sube = no;
 		posicao->subd = ant;
 	}
-	else
-	{
+	else {
 		posicao->subd = no;
 		posicao->sube = ant;
 	}	
 }
 
-ARVORE * aloca_ARVORE()
+ARVORE * aloca_ARVORE ( )
 {
 	ARVORE * no = ( ARVORE * ) malloc ( sizeof( ARVORE ));
 	
-	if( no == NULL)
-	{
+	if( no == NULL) {
 		printf("\n### Estouro de Memoria! ###\n");
 		exit (1);
 	}
-	else
-	{
+	else {
 		no->sube = NULL;
 		no->subd = NULL;
 	}
+	
 	return no;
 }
 
-void salva_ARVORE(ARVORE * arvore)
-{
-	char destino [256] = "oraculo.txt";
+void salva_ARVORE( ARVORE * arvore ) {
 	
-	FILE *pont_arq;
+	if(confirma("\n Deseja salvar a árvore atual (s/n)? ", NULL, NULL, "sn") != 's') {
+		printf("\n Operação cancelada!\n\n");
+		return;
+	}
+		
+	FILE *pont_arq = fopen(ORA_NOME_ARQ, "w");
 	
-	pont_arq = fopen(destino, "w");
-	
-	if(pont_arq == NULL)
-	{
-		printf("Erro ao abrir o arquivo '%s'!\n");
+	if(pont_arq == NULL) {
+		printf("\n Erro ao abrir o arquivo '%s'!\n");
 		return;
 	}
 	
-	fprintf(pont_arq, "%s", HEADER_ARQ);
+	fprintf(pont_arq, "%s", ORA_CABECALHO_ARQ);
+	
+	fprintf(pont_arq, "%d\n", acertosOraculo);
 	
 	salva_recursivo(pont_arq, arvore, 0);
 	
 	fclose(pont_arq);
+	
+	printf("\n Arvore Salva com Sucesso!\n\n");
 }
 
-void testa_ARVORE(ARVORE * arvore)
+void testa_ARVORE ( ARVORE * arvore )
 {
 	ARVORE * posicao = arvore;
 	
-	printf("... Pense em algo e press alguma tecla para continuarmos ...\n");
+	printf("\n ... Pense em algo e press alguma tecla para continuarmos ...\n\n");
 	getch();
 			
-	while ( posicao->sube != NULL )
-	{
-		if (confirma("%s ", posicao->info.informacao, NULL)=='s')
+	while ( posicao->sube != NULL ) {
+		if (confirma("%s ", posicao->info.informacao, NULL, "sn")=='s')
 			posicao = posicao->sube;
 		else
 			posicao = posicao->subd;
 	}
 
-	if(confirma("Ja sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL) == 's')
-		printf("Ok! Mais um ponto pra mim!\n");
-	else
-	{
+	if(confirma("\n Ja sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL, "sn") == 's') {
+		printf(" \n Mais um ponto pra mim! :) \n\n");
+		acertosOraculo ++;
+	}
+	else {
 		ramifica_ARVORE(
 			posicao, 
-			"Ok, voce venceu! Me diga em que estava pensando: ",
-			"Ta bom espertalhao! Faça uma pergunta que diferencie '%s' de '%s': "
+			" Ok, voce venceu! Me diga em que estava pensando: ",
+			" Ta bom espertalhao! Faça uma pergunta que diferencie '%s' de '%s': "
 		);
 	}
 	
 }
 
 			
-void init_ARVORE ( ARVORE** r)
+void init_ARVORE ( ARVORE** r )
 {
 	
     ARVORE* no = aloca_ARVORE();
 
+	printf("\n[ Inicializando a Arvore ]\n");
+
 	fflush(stdin);
-	printf("Informe algo que esteja pensando: ");
-	fgets(no->info.informacao, 256, stdin);
+	printf("\n Informe algo que esteja pensando: ");
+	fgets(no->info.informacao, ORA_LARG_INFO, stdin);
 	no->info.informacao[strcspn(no->info.informacao, "\n")] = 0;
 	
 	*r = no;
 	
 	ramifica_ARVORE(
 		no,
-		"Informe outra coisa que esteja pensando: ",
-		"Informe uma pergunta que diferencie '%s' de '%s': ");
+		" Informe outra coisa que esteja pensando: ",
+		" Informe uma pergunta que diferencie '%s' de '%s': ");
+		
+	printf("\n Arvore inicializado com Sucesso!\n\n");
 }
 
-void salva_recursivo (FILE *pont_arq, ARVORE* r, int pos)
+void salva_recursivo ( FILE *pont_arq, ARVORE* r, int pos )
 {
 	pos ++;
-	if (r != NULL)
-	{
+	if (r != NULL) {
 		for(int i=0; i<pos; i++)
-			fprintf(pont_arq, "%c", NO_CHAR);
+			fprintf(pont_arq, "%c", ORA_NIVEL_CHAR);
 			
 		fprintf(pont_arq, "%s\n", r->info.informacao);
 	
@@ -302,35 +338,55 @@ void salva_recursivo (FILE *pont_arq, ARVORE* r, int pos)
 }
 
 
-void imprime_ARVORE (ARVORE* r, int pos)
+void imprime_ARVORE ( ARVORE* r, int pos )
 {
 	if (pos == 0)
-		printf("\n==================== VISAO DA ARVORE ====================\n");
-	pos ++;
-	if (r != NULL)
-	{
+		printf("\n[ Visualização da Árvore ]\n");
+
+	if (r != NULL) {
 		for(int i=0; i<pos; i++)
-			printf("  ");
+			printf("| ");
 			
-		printf("-%s\n", r->info.informacao);
+		printf("+%s\n", r->info.informacao);
 	
-    	imprime_ARVORE(r->sube, pos);
-    	imprime_ARVORE(r->subd, pos);
+    	imprime_ARVORE(r->sube, pos+1);
+    	imprime_ARVORE(r->subd, pos+1);
 	}
-	if (pos == 1)
-		printf("=========================================================\n");
+	
+	if (pos == 0)
+		printf("\n");
 }
 
-char confirma(char* pergunta, char* par1, char* par2)
+int contaFolhas ( ARVORE* r )
+{
+	if (r == NULL)
+		return 0;
+
+	if ( r->sube == NULL && r->subd == NULL ) // sou uma folha?
+		return 1;
+		
+	return 
+		contaFolhas(r->sube) +
+		contaFolhas(r->subd);
+}
+
+char confirma( char* pergunta, char* par1, char* par2, char* opcoes )
 {
 	char resp = ' ';
 	
-	while (resp != 's' && resp != 'n')
-	{
-		fflush(stdin);
+	while (1) {
 		printf(pergunta, par1, par2);
-		scanf("%c", &resp);
+		
+		fflush(stdin);
+		resp = getch();
+		
+		printf("%c\n", resp);
+		for(int i=0; i<strlen(opcoes); i++)
+			if(opcoes[i] == resp)
+				return resp;
 	}
+	
 	return resp;
+	
 }
 
