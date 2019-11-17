@@ -1,5 +1,5 @@
 ===ORACULO===
-1
+2
 _tem vida?
 __pessoa?
 ___famosa?
@@ -22,28 +22,32 @@ ______arvore
 _____microorganismo?
 ______bacteria
 ______lobisomem
-__objeto?
-___veiculo?
-____carro
-____eletro?
-_____tv
-_____utensilio?
-______alicate
-______pneu
-___alimento?
-____massa
-____bebida?
-_____cafe
-_____mineral?
-______ouro
-______sentimento ou emocao?
-_______felicidade
-_______lugar?
-________casa
-________tem onda?
-_________tem agua?
-__________mar
-__________faz barulho?
-___________som
-___________luz
-_________raio
+__e deste planeta?
+___objeto?
+____veiculo?
+_____carro
+_____eletro?
+______tv
+______utensilio?
+_______alicate
+_______pneu
+____alimento?
+_____massa
+_____bebida?
+______cafe
+______mineral?
+_______ouro
+_______sentimento ou emocao?
+________felicidade
+________lugar?
+_________casa
+_________tem onda?
+__________tem agua?
+___________mar
+___________faz barulho?
+____________som
+____________luz
+__________raio
+___tem luz propria?
+____estrela
+____lua

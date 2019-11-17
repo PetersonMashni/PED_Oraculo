@@ -22,7 +22,7 @@ const char ORA_NOME_ARQ [] = "oraculo.txt";                // Arquivo utilizado 
 /* Definição dos Registros Utilizados                    */
 /*********************************************************/ 
 typedef struct { 
-       char informacao [ORA_LARG_INFO];       
+       char informacao [ORA_LARG_INFO];       // Informação armazenada: Pergunta em caso de nó e resposta em caso de folha
 } INFORMACAO;
        
 typedef struct arv {
@@ -35,37 +35,38 @@ typedef struct arv {
 /*********************************************************/ 
 /* Variaveis Publicas                                    */
 /*********************************************************/ 
-int acertosOraculo;
+int acertosOraculo;       // contador de acertos da árvore
 
 
 /*********************************************************************************************/
 /* Declaração das funções                                                                    */
 /*********************************************************************************************/
-void criaArvore ( ARVORE** r );
-void iniciaArvore ( ARVORE** r );
-void imprimeArvore ( ARVORE* r, int pos );
-void testaArvore ( ARVORE * arvore );
-void salvaArvore ( ARVORE * arvore );
-void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos );
-void carregaArvore ( ARVORE ** arvore );
-int  carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos );
-void mostraEstatisticas ( ARVORE* r );
+void criaArvore ( ARVORE** r );                                    // Zera o ponteiro da árvore
+void iniciaArvore ( ARVORE** r );                                  // Gera a raíz e duas primeiras folhas com dados preenchidos pelo usuário
+void imprimeArvore ( ARVORE* r, int pos );                         // Demonstra em Tela a árvore
+void testaArvore ( ARVORE * arvore );                              // Navega pela árvore realizando as perguntas, apresentando a resposta encontrada
+                                                                      // ou solicitando o novo valor e ramificando a árvore
+void salvaArvore ( ARVORE * arvore );                              // salva toda a árvore em arquivo
+void carregaArvore ( ARVORE ** arvore );                           // carrega árvore salva em arquivo
+void mostraEstatisticas ( ARVORE* r );                             // Exibe os dados da árvore
 
 // Funcoes de acesso direto à árvore
-void    ramificaArvore( ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca );
-int     contaFolhas ( ARVORE* r);
-ARVORE* aloca_ARVORE ( );
+void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos );        // método auxiliar para salvamento da árvore
+int  carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos );     // método auxiliar para carga de árvore salva em arquivo
+void ramificaArvore( ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca );  // torna folha em galho, subordinando duas novas folhas a este
+int  contaFolhas ( ARVORE* r);                                     // conta a quantidade de folhas da árvore (palavras aprendidas)
+ARVORE* alocaArvore ( );                                          // aloca uma folha nova a ser agregada à árvore
 
 // Funcoes auxiliares
-char confirma ( char* pergunta, char* par1, char* par2, char* opcoes );
+char confirma ( char* pergunta, char* par1, char* par2, char* opcoes ); // realiza pergunta ao usuário, aceitando apenas uma das opções informadas
 
 /*********************************************************************************************/
 /* Ponto de Entrada                                                                          */
 /*********************************************************************************************/
 int main( void )
 {
-	ARVORE * arvore = NULL;
-	char op;
+	ARVORE * arvore = NULL;                  // ponteiro para a árvore
+	char op;                                 // variável para receber a opção do menu
 	
 	acertosOraculo = 0;
 	
@@ -192,7 +193,7 @@ int carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos ){
 		}
 	}
 			
-	*r = aloca_ARVORE();
+	*r = alocaArvore();
 	
 	strncpy((*r)->info.informacao, linha+pos+1, ORA_LARG_INFO);
 	
@@ -222,8 +223,8 @@ void ramificaArvore(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) 
 	fgets(diferenca, ORA_LARG_INFO, stdin);
 	diferenca[strcspn(diferenca, "\n")] = 0;
 				
-	ARVORE * no = aloca_ARVORE();
-	ARVORE * ant = aloca_ARVORE();		
+	ARVORE * no = alocaArvore();
+	ARVORE * ant = alocaArvore();		
 
 	strcpy(ant->info.informacao, posicao->info.informacao);
 	strcpy(posicao->info.informacao, diferenca);
@@ -239,7 +240,7 @@ void ramificaArvore(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) 
 	}	
 }
 
-ARVORE * aloca_ARVORE ( )
+ARVORE * alocaArvore ( )
 {
 	ARVORE * no = ( ARVORE * ) malloc ( sizeof( ARVORE ));
 	
@@ -318,7 +319,7 @@ void testaArvore ( ARVORE * arvore )
 void iniciaArvore ( ARVORE** r )
 {
 	
-    ARVORE* no = aloca_ARVORE();
+    ARVORE* no = alocaArvore();
 
 	printf("\n[ Inicializando a Árvore ]\n");
 
