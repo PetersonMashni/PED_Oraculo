@@ -1,5 +1,5 @@
 ===ORACULO===
-2
+3
 _tem vida?
 __pessoa?
 ___famosa?
@@ -7,7 +7,9 @@ ____Silvio Santos
 ____Professora Dani
 ___animal?
 ____mamifero?
-_____cachorro
+_____Esse animal mia?
+______gato
+______cachorro
 _____ave?
 ______canario
 ______reptil?
