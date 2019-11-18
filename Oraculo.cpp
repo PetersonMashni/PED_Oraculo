@@ -1,6 +1,8 @@
-/*********************************************************/ 
-/* Importação das Bibliotecas Utilizados                 */
-/*********************************************************/ 
+/*********************************************************************************************/ 
+/* Importação das Bibliotecas Utilizados                                                     */
+/*********************************************************************************************/ 
+
+
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
@@ -8,65 +10,86 @@
 #include <locale.h>
 
 
-/********************************************************************************************************************************/
-/* Constantes utilizadas no Código                                                                                              */
-/********************************************************************************************************************************/
-const char ORA_CABECALHO_ARQ [] = "===ORACULO===\n";       // utilizada no cabeçalhos dos arquivos para identificação do arquivo
-const char ORA_NIVEL_CHAR = '_';                           // char utilizadado para definir o nivel de cada no arquivo
-const int  ORA_LARG_INFO = 256;                            // Largura dos valores armazenados na Arvore
-const int  ORA_LARG_BUFFER_ARQ = ORA_LARG_INFO * 2;        // Largura do buffer utilizado para leitura de linha de arquivo
-const char ORA_NOME_ARQ [] = "oraculo.txt";                // Arquivo utilizado para persistir a árvore
+/*********************************************************************************************/
+/* Constantes utilizadas no Código                                                           */
+/*********************************************************************************************/
 
 
-/*********************************************************/ 
-/* Definição dos Registros Utilizados                    */
-/*********************************************************/ 
+const char ORA_CABECALHO_ARQ [] = "===ORACULO===\n";                                         // utilizada no cabeçalhos dos arquivos para identificação do arquivo
+const char ORA_NIVEL_CHAR = '_';                                                             // char utilizadado para definir o nivel de cada no arquivo
+const int  ORA_LARG_INFO = 256;                                                              // Largura dos valores armazenados na Arvore
+const int  ORA_LARG_BUFFER_ARQ = ORA_LARG_INFO * 2;                                          // Largura do buffer utilizado para leitura de linha de arquivo
+const char ORA_NOME_ARQ [] = "oraculo.txt";                                                  // Arquivo utilizado para persistir a árvore
+
+
+/*********************************************************************************************/ 
+/* Definição dos Registros Utilizados                                                        */
+/*********************************************************************************************/ 
+
+
 typedef struct { 
-       char informacao [ORA_LARG_INFO];       // Informação armazenada: Pergunta em caso de nó e resposta em caso de folha
+       char informacao [ORA_LARG_INFO];                                                      // Informação armazenada: Pergunta em caso de nó e resposta em caso de folha
 } INFORMACAO;
        
 typedef struct arv {
-       INFORMACAO info;   // dados do registro
-       struct arv* subd;  // ponteiro para o nodo da direita
-       struct arv* sube;  // ponteiro para o nodo da esquerda
+       INFORMACAO info;                                                                      // dados do registro
+       struct arv* subd;                                                                     // ponteiro para o nodo da direita
+       struct arv* sube;                                                                     // ponteiro para o nodo da esquerda
 } ARVORE; 
 
 
-/*********************************************************/ 
-/* Variaveis Publicas                                    */
-/*********************************************************/ 
-int acertosOraculo;       // contador de acertos da árvore
+/*********************************************************************************************/ 
+/* Variaveis Publicas                                                                        */
+/*********************************************************************************************/ 
+
+
+int acertosOraculo;                                                                          // contador de acertos da árvore
 
 
 /*********************************************************************************************/
 /* Declaração das funções                                                                    */
 /*********************************************************************************************/
-void criaArvore ( ARVORE** r );                                    // Zera o ponteiro da árvore
-void iniciaArvore ( ARVORE** r );                                  // Gera a raíz e duas primeiras folhas com dados preenchidos pelo usuário
-void imprimeArvore ( ARVORE* r, int pos );                         // Demonstra em Tela a árvore
-void testaArvore ( ARVORE * arvore );                              // Navega pela árvore realizando as perguntas, apresentando a resposta encontrada
-                                                                      // ou solicitando o novo valor e ramificando a árvore
-void salvaArvore ( ARVORE * arvore );                              // salva toda a árvore em arquivo
-void carregaArvore ( ARVORE ** arvore );                           // carrega árvore salva em arquivo
-void mostraEstatisticas ( ARVORE* r );                             // Exibe os dados da árvore
 
-// Funcoes de acesso direto à árvore
-void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos );        // método auxiliar para salvamento da árvore
-int  carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos );     // método auxiliar para carga de árvore salva em arquivo
-void ramificaArvore( ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca );  // torna folha em galho, subordinando duas novas folhas a este
-int  contaFolhas ( ARVORE* r);                                     // conta a quantidade de folhas da árvore (palavras aprendidas)
-ARVORE* alocaArvore ( );                                           // aloca uma folha nova a ser agregada à árvore
 
-// Funcoes auxiliares
-char confirma ( char* pergunta, char* par1, char* par2, char* opcoes ); // realiza pergunta ao usuário, aceitando apenas uma das opções informadas
+void criaArvore         ( ARVORE** r );                                                      // Zera o ponteiro da árvore
+void iniciaArvore       ( ARVORE** r );                                                      // Gera a raíz e duas primeiras folhas com dados preenchidos pelo usuário
+void imprimeArvore      ( ARVORE*  r, int pos );                                             // Demonstra em Tela a árvore
+void testaArvore        ( ARVORE*  arvore );                                                 // Navega pela árvore realizando as perguntas, apresentando a resposta encontrada
+                                                                                             // ou solicitando o novo valor e ramificando a árvore
+void salvaArvore        ( ARVORE*  arvore );                                                 // salva toda a árvore em arquivo
+void carregaArvore      ( ARVORE** arvore );                                                 // carrega árvore salva em arquivo
+void mostraEstatisticas ( ARVORE*  r );                                                      // Exibe os dados da árvore
+
+
+/*********************************************************************************************/
+/* Funcoes de acesso direto à árvore                                                         */
+/*********************************************************************************************/
+
+
+void salvaRecursivo     ( FILE*   pont_arq, ARVORE*  r, int pos );                           // método auxiliar para salvamento da árvore
+int  carregaRecursivo   ( FILE*   pont_arq, ARVORE** r, int pos );                           // método auxiliar para carga de árvore salva em arquivo
+void ramificaArvore     ( ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca );      // torna folha em galho, subordinando duas novas folhas a este
+int  contaFolhas        ( ARVORE* r);                                                        // conta a quantidade de folhas da árvore (palavras aprendidas)
+ARVORE* alocaArvore     ( );                                                                 // aloca uma folha nova a ser agregada à árvore
+
+
+/*********************************************************************************************/
+/* Funcoes auxiliares                                                                        */
+/*********************************************************************************************/
+
+
+char confirma ( char* pergunta, char* par1, char* par2, char* opcoes );                      // realiza pergunta ao usuário, aceitando apenas uma das opções informadas
+
 
 /*********************************************************************************************/
 /* Ponto de Entrada                                                                          */
 /*********************************************************************************************/
+
+
 int main( void )
 {
-	ARVORE * arvore = NULL;                  // ponteiro para a árvore
-	char op;                                 // variável para receber a opção do menu
+	ARVORE * arvore = NULL;                                                                  // ponteiro para a árvore
+	char op;                                                                                 // variável para receber a opção do menu
 	
 	acertosOraculo = 0;
 	
