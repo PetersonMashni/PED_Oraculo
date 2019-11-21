@@ -59,6 +59,7 @@ void testaArvore        ( ARVORE*  arvore );                                    
 void salvaArvore        ( ARVORE*  arvore );                                                 // salva toda a árvore em arquivo
 void carregaArvore      ( ARVORE** arvore );                                                 // carrega árvore salva em arquivo
 void mostraEstatisticas ( ARVORE*  r );                                                      // Exibe os dados da árvore
+void remove_recursivo	( ARVORE**, int pos );
 
 
 /*********************************************************************************************/
@@ -90,6 +91,8 @@ int main( void )
 {
 	ARVORE * arvore = NULL;                                                                  // ponteiro para a árvore
 	char op;                                                                                 // variável para receber a opção do menu
+	int cod;
+
 	
 	acertosOraculo = 0;
 	
@@ -105,10 +108,11 @@ int main( void )
     	printf( "| [4] Salva a Árvore em Arquivo                     |\n" );
     	printf( "| [5] Carrega a Árvore de Arquivo                   |\n" );
     	printf( "| [6] Mostrar Estatisticas                          |\n" );
+    	printf( "| [7] Destruir a Árvore                             |\n" );
 		printf( "| [9] Sair do programa                              |\n" );
 	    printf( "+---------------------------------------------------+\n" );
 	    
-		op = confirma("Digite uma das Opções do Menu: ", NULL, NULL, "1234569");
+		op = confirma("Digite uma das Opções do Menu: ", NULL, NULL, "12345679");
 	    
 	    switch( op ) {
 	        case '1':                                                                        // rotina cria ARVORE       
@@ -134,6 +138,10 @@ int main( void )
                 
 			case '6':                                                                        // rotina carrega ARVORE       
 	            mostraEstatisticas ( arvore );
+	            break;
+	            
+	        case '7':                          
+                remove_recursivo( &arvore, 0 );
 	            break;
 				                
            case '9':                                                                         // término do programa                                                 
@@ -167,7 +175,7 @@ void mostraEstatisticas ( ARVORE* r ){
 /* objetivo: Inicializar o ponteiro da árvore com NULL                                       */
 /*********************************************************************************************/
 
-	void criaArvore( ARVORE** r )
+void criaArvore( ARVORE** r )
 {
     *r = NULL; 
 }
@@ -496,5 +504,22 @@ char confirma( char* pergunta, char* par1, char* par2, char* opcoes )
 	
 	return resp;
 	
+}
+
+void remove_recursivo( ARVORE **p, int pos ){	
+	if(pos == 0 && confirma("Deseja excluir a árvore em memória? ", NULL, NULL, "sn")=='n')
+		return;
+		
+	if ((*p) != NULL) {	
+    	remove_recursivo(&(*p)->sube, pos+1);
+    	remove_recursivo(&(*p)->subd, pos+1);
+	}
+	free (*p);
+	*p = NULL;
+	
+	if(pos == 0)
+		printf("Árvore excluída com sucesso!");
+		
+ 	return;
 }
 
