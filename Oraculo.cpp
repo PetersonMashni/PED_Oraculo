@@ -111,38 +111,38 @@ int main( void )
 		op = confirma("Digite uma das Opções do Menu: ", NULL, NULL, "1234569");
 	    
 	    switch( op ) {
-	        case '1':   // rotina cria ARVORE       
+	        case '1':                                                                        // rotina cria ARVORE       
 	            criaArvore( &arvore );
 	            iniciaArvore( &arvore );
 	            break;                               
 				                      
-			case '2':   // rotina testar ARVORE       
+			case '2':                                                                        // rotina testar ARVORE       
                 testaArvore( arvore );
                 break;
                 
-			case '3':   // rotina imprime ARVORE       
+			case '3':                                                                        // rotina imprime ARVORE       
                 imprimeArvore( arvore, 0 );
                 break;
                 
-            case '4':   // rotina salva ARVORE       
+            case '4':                                                                        // rotina salva ARVORE       
                 salvaArvore( arvore );
                 break;
                 
-            case '5':   // rotina carrega ARVORE       
+            case '5':                                                                        // rotina carrega ARVORE       
 	            carregaArvore( &arvore );
 	            break;
                 
-			case '6':   // rotina carrega ARVORE       
+			case '6':                                                                        // rotina carrega ARVORE       
 	            mostraEstatisticas ( arvore );
 	            break;
 				                
-           case '9':  // término do programa                                                 
+           case '9':                                                                         // término do programa                                                 
                 exit( 1 ); 
                 break;                
                    
-        } // switch( op )
+        }                                                                                    // switch( op )
 	        
-    } // fim do while( 1 )
+    }                                                                                        // fim do while( 1 )
 
 	return 0;
 } 
@@ -155,10 +155,10 @@ int main( void )
 
 void mostraEstatisticas ( ARVORE* r ){
 	
-	printf("\n Palavras Aprendidas.: %d", contaFolhas(r));
-	printf("\n Meus Acertos........: %d\n\n", acertosOraculo);
-	system("pause");
-	system("cls");
+	printf("\n Palavras Aprendidas.: %d", contaFolhas(r));                                   // Mostra na tela a quantidade de palavras aprendidas
+	printf("\n Meus Acertos........: %d\n\n", acertosOraculo);                               // Mostra na tela a quantidade de acertos
+	system("pause");                                                                         // Pausa a tela até pressionar algum botão do teclado
+	system("cls");                                                                           // Limpa a tela
 
 }
 
@@ -183,14 +183,14 @@ void carregaArvore( ARVORE ** arvore ){
 	
 	FILE *pont_arq = fopen(ORA_NOME_ARQ, "r");
 	
-	if(confirma("\n Deseja carregar do arquivo (s/n)? ", NULL, NULL, "sn") != 's') {
-		printf("\n Operação cancelada!\n\n");
+	if(confirma("\n Deseja carregar do arquivo (s/n)? ", NULL, NULL, "sn") != 's') {         // Confirmação de carregamento do arquivo (.txt)
+		printf("\n Operação cancelada!\n\n");                                                // Cancelamento da função carregaArvore
 		return;
 	}
 
-	if(pont_arq == NULL)
+	if(pont_arq == NULL)                                                                     // Testa se a variável pont_arq é igual a NULL
 	{
-		printf("\n Erro ao abrir o arquivo '%s'!\n", ORA_NOME_ARQ);
+		printf("\n Erro ao abrir o arquivo '%s'!\n", ORA_NOME_ARQ);                          // Mostra na tela a mensagem de erro caso não for possível carregar o arquivo (.txt)
 		return;
 	}
 
@@ -208,9 +208,9 @@ void carregaArvore( ARVORE ** arvore ){
 		
 		criaArvore(arvore);
 	  	if(carregaRecursivo(pont_arq, arvore, 0) == 0)
-			printf("\n Arquivo carregado com sucesso!\n\n");
-			system ("pause");
-			system ("cls");
+			printf("\n Arquivo carregado com sucesso!\n\n");                                 // Mensagem de que o arquivo (.txt) foi carregado para dentro do programa 
+			system ("pause");                                                                // Pausa a tela até pressionar algum botão do teclado
+			system ("cls");                                                                  // Limpa a tela
 	}
 	
 	fclose(pont_arq);
@@ -318,10 +318,10 @@ void ramificaArvore(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) 
 
 void salvaArvore( ARVORE * arvore ) {
 	
-	if(confirma("\n Deseja salvar a árvore atual (s/n)? ", NULL, NULL, "sn") != 's') {
-		printf("\n Operação cancelada!\n\n");
-		system ("pause");
-		system ("cls");
+	if(confirma("\n Deseja salvar a árvore atual (s/n)? ", NULL, NULL, "sn") != 's') {       // Confirmação de que deseja salvar a árvore
+		printf("\n Operação cancelada!\n\n");                                                // Cancelamento da função salvaArvore
+		system ("pause");                                                                    // Pausa a tela até pressionar algum botão do teclado
+		system ("cls");                                                                      // Limpa tela
 		return;
 	}
 		
@@ -341,8 +341,8 @@ void salvaArvore( ARVORE * arvore ) {
 	fclose(pont_arq);
 	
 	printf("\n Árvore Salva com Sucesso!\n\n");
-	system ("pause");
-	system ("cls");
+	system ("pause");                                                                         // Pausa a tela até pressionar algum botão do teclado
+	system ("cls");                                                                           // Limpa a tela
 }
 
 /*********************************************************************************************/
@@ -373,8 +373,8 @@ void testaArvore ( ARVORE * arvore )
 	if(confirma("\n Já sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL, "sn") == 's') {
 		printf(" \n Mais um ponto pra mim! :) \n\n");
 		acertosOraculo ++;
-		system("pause");
-		system("cls");
+		system("pause");                                                                      // Pausa a tela até pressionar algum botão do teclado
+		system("cls");                                                                        // Limpa a tela
 	}
 	else {
 		ramificaArvore(
@@ -466,7 +466,7 @@ int contaFolhas ( ARVORE* r )
 	if (r == NULL)
 		return 0;
 
-	if ( r->sube == NULL && r->subd == NULL ) // sou uma folha?
+	if ( r->sube == NULL && r->subd == NULL )                                                // sou uma folha?
 		return 1;
 		
 	return 
