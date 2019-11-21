@@ -147,17 +147,35 @@ int main( void )
 	return 0;
 } 
 
+/*********************************************************************************************/
+/* mostraEstatisticas                                                                        */
+/* objetivo: apresentar a quantidade de palavras aprendidas e                                */
+/* quantidade de acertos do programa.                                                        */
+/*********************************************************************************************/
+
 void mostraEstatisticas ( ARVORE* r ){
 	
 	printf("\n Palavras Aprendidas.: %d", contaFolhas(r));
 	printf("\n Meus Acertos........: %d\n\n", acertosOraculo);
+	system("pause");
+	system("cls");
 
 }
 
-void criaArvore( ARVORE** r )
+/*********************************************************************************************/
+/* criaArvore                                                                                */
+/* objetivo: Inicializar o ponteiro da árvore com NULL                                       */
+/*********************************************************************************************/
+
+	void criaArvore( ARVORE** r )
 {
     *r = NULL; 
 }
+
+/*********************************************************************************************/
+/* carregaArvore                                                                             */
+/* objetivo: Buscar o arquivo (.txt) com informações e carregar para dentro do programa.     */
+/*********************************************************************************************/
 
 void carregaArvore( ARVORE ** arvore ){
 	
@@ -198,6 +216,12 @@ void carregaArvore( ARVORE ** arvore ){
 	fclose(pont_arq);
 }
 
+/*********************************************************************************************/
+/* carregaRecursivo                                                                        */
+/* objetivo:                                 */
+/*                                                         */
+/*********************************************************************************************/
+
 int carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos ){
 	char linha [ORA_LARG_BUFFER_ARQ];
 	fpos_t posArq;
@@ -234,6 +258,11 @@ int carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos ){
 	
 }
 
+/*********************************************************************************************/
+/* ramificaArvore                                                                            */
+/* objetivo: Organizar a resposta de acordo com as perguntas dentro da árvore                */
+/*********************************************************************************************/
+
 void ramificaArvore(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) {
 	char novo [ORA_LARG_INFO];
 	char diferenca [ORA_LARG_INFO];
@@ -266,7 +295,7 @@ void ramificaArvore(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) 
 	system("cls");	
 }
 
-ARVORE * alocaArvore ( )
+	ARVORE * alocaArvore ( )
 {
 	ARVORE * no = ( ARVORE * ) malloc ( sizeof( ARVORE ));
 	
@@ -281,6 +310,11 @@ ARVORE * alocaArvore ( )
 	
 	return no;
 }
+
+/*********************************************************************************************/
+/* salvaArvore                                                                               */
+/* objetivo: Salvar as informações da árvore atual dentro de um arquivo (.txt)               */
+/*********************************************************************************************/
 
 void salvaArvore( ARVORE * arvore ) {
 	
@@ -310,6 +344,11 @@ void salvaArvore( ARVORE * arvore ) {
 	system ("pause");
 	system ("cls");
 }
+
+/*********************************************************************************************/
+/* testaArvore                                                                               */
+/* objetivo: Iniciar o teste do programa com uma pergunta e aguardar a resposta do usuário.  */
+/*********************************************************************************************/
 
 void testaArvore ( ARVORE * arvore )
 {
@@ -347,8 +386,12 @@ void testaArvore ( ARVORE * arvore )
 	
 }
 
-			
-void iniciaArvore ( ARVORE** r )
+/*********************************************************************************************/
+/* iniciaArvore                                                                              */
+/* objetivo: Inserir informações na árvore.                                                  */
+/*********************************************************************************************/
+	
+	void iniciaArvore ( ARVORE** r )
 {
 	
     ARVORE* no = alocaArvore();
@@ -370,6 +413,11 @@ void iniciaArvore ( ARVORE** r )
 	printf("\n Árvore inicializada com Sucesso!\n\n");
 }
 
+/*********************************************************************************************/
+/* salvaRecursivo                                              */
+/* objetivo:                                                  */
+/*********************************************************************************************/
+
 void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos )
 {
 	pos ++;
@@ -384,6 +432,10 @@ void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos )
 	}
 }
 
+/*********************************************************************************************/
+/* imprimeArvore                                                                             */
+/* objetivo: Mostrar na tela a árvore de decisões criada até o momento.                      */
+/*********************************************************************************************/
 
 void imprimeArvore ( ARVORE* r, int pos )
 {
@@ -403,6 +455,12 @@ void imprimeArvore ( ARVORE* r, int pos )
 		printf("\n");
 }
 
+/*********************************************************************************************/
+/* contaFolhas                                                                               */
+/* objetivo: Verificar a quantidades de folhas que possuem na árvore para                    */
+/* saber a quantidade de palavras aprendidas (respostas).                                    */
+/*********************************************************************************************/
+
 int contaFolhas ( ARVORE* r )
 {
 	if (r == NULL)
@@ -415,6 +473,11 @@ int contaFolhas ( ARVORE* r )
 		contaFolhas(r->sube) +
 		contaFolhas(r->subd);
 }
+
+/*********************************************************************************************/
+/* confirma                                  */
+/* objetivo:                                   */
+/*********************************************************************************************/
 
 char confirma( char* pergunta, char* par1, char* par2, char* opcoes )
 {
