@@ -59,7 +59,7 @@ void testaArvore        ( ARVORE*  arvore );                                    
 void salvaArvore        ( ARVORE*  arvore );                                                 // salva toda a árvore em arquivo
 void carregaArvore      ( ARVORE** arvore );                                                 // carrega árvore salva em arquivo
 void mostraEstatisticas ( ARVORE*  r );                                                      // Exibe os dados da árvore
-void remove_recursivo	( ARVORE**, int pos );
+void removeRecursivo	( ARVORE**, int pos );
 
 
 /*********************************************************************************************/
@@ -80,7 +80,7 @@ ARVORE* alocaArvore     ( );                                                    
 
 
 char confirma ( char* pergunta, char* par1, char* par2, char* opcoes );                      // realiza pergunta ao usuário, aceitando apenas uma das opções informadas
-
+void mensagem( char* msg );																	 // exibe mensagem em tela e aguarda que o usuário press. alguma tecla
 
 /*********************************************************************************************/
 /* Ponto de Entrada                                                                          */
@@ -91,15 +91,13 @@ int main( void )
 {
 	ARVORE * arvore = NULL;                                                                  // ponteiro para a árvore
 	char op;                                                                                 // variável para receber a opção do menu
-	int cod;
-
 	
-	acertosOraculo = 0;
+	acertosOraculo = 0;																		 // variável para contagem de acertos do algoritmo
 	
-	setlocale(LC_ALL, "Portuguese");
+	setlocale(LC_ALL, "Portuguese");														 // permite acentos nas strings do código
 	
-	while( 1 ){
-	    printf( "+---------------------------------------------------+\n" );
+	while( 1 ){																		 		 // laço de controle do menu
+	    printf( "+---------------------------------------------------+\n" );				 // montagem do menu
 	    printf( "| ORÁCULO - Uso de Árvore Binária                   |\n" );
 	    printf( "+---------------------------------------------------+\n" );
 	    printf( "| [1] Cria e Inicializa a Árvore                    |\n" );
@@ -112,36 +110,37 @@ int main( void )
 		printf( "| [9] Sair do programa                              |\n" );
 	    printf( "+---------------------------------------------------+\n" );
 	    
-		op = confirma("Digite uma das Opções do Menu: ", NULL, NULL, "12345679");
+		op = confirma("Digite uma das Opções do Menu: ", NULL, NULL, "12345679");			 // chama função que faz pergunta validando as possíveis opcões 
 	    
-	    switch( op ) {
+	    switch( op ) {																		 // desvia fluxo de acordo com a opção selecionada
 	        case '1':                                                                        // rotina cria ARVORE       
-	            criaArvore( &arvore );
-	            iniciaArvore( &arvore );
-	            break;                               
+	            criaArvore( &arvore );														 // cria a árvore
+	            iniciaArvore( &arvore );													 // inicaliza a árvore solicitando o preenchimento de uma pergunta
+	            																			 	// e duas respostas
+	            break;                               										 
 				                      
-			case '2':                                                                        // rotina testar ARVORE       
-                testaArvore( arvore );
+			case '2':                                                                        // rotina testar ARVORE, realizando as perguntas (nós) até alcancar
+                testaArvore( arvore );															// as folhas ou solicitando novos dados
                 break;
                 
-			case '3':                                                                        // rotina imprime ARVORE       
+			case '3':                                                                        // rotina imprime ARVORE 
                 imprimeArvore( arvore, 0 );
                 break;
                 
-            case '4':                                                                        // rotina salva ARVORE       
+            case '4':                                                                        // rotina salva ARVORE no arquivo oraculo.txt
                 salvaArvore( arvore );
                 break;
                 
-            case '5':                                                                        // rotina carrega ARVORE       
+            case '5':                                                                        // rotina carrega a árvore do arquivo oraculo.txt
 	            carregaArvore( &arvore );
 	            break;
                 
-			case '6':                                                                        // rotina carrega ARVORE       
+			case '6':                                                                        // rotina mostra estatisticas
 	            mostraEstatisticas ( arvore );
 	            break;
 	            
-	        case '7':                          
-                remove_recursivo( &arvore, 0 );
+	        case '7':                          												 // elimina a árvore, liberando a memória utilizada
+                removeRecursivo( &arvore, 0 );
 	            break;
 				                
            case '9':                                                                         // término do programa                                                 
@@ -152,15 +151,15 @@ int main( void )
 	        
     }                                                                                        // fim do while( 1 )
 
-	return 0;
+	return 0;																				 // finaliza o programa
 } 
+
 
 /*********************************************************************************************/
 /* mostraEstatisticas                                                                        */
 /* objetivo: apresentar a quantidade de palavras aprendidas e                                */
 /* quantidade de acertos do programa.                                                        */
 /*********************************************************************************************/
-
 void mostraEstatisticas ( ARVORE* r ){
 	
 	printf("\n Palavras Aprendidas.: %d", contaFolhas(r));                                   // Mostra na tela a quantidade de palavras aprendidas
@@ -170,280 +169,293 @@ void mostraEstatisticas ( ARVORE* r ){
 
 }
 
+
 /*********************************************************************************************/
 /* criaArvore                                                                                */
 /* objetivo: Inicializar o ponteiro da árvore com NULL                                       */
 /*********************************************************************************************/
-
 void criaArvore( ARVORE** r )
 {
-    *r = NULL; 
+    *r = NULL; 																				 // inicializa o ponteiro com NULL
 }
 
-/*********************************************************************************************/
-/* carregaArvore                                                                             */
-/* objetivo: Buscar o arquivo (.txt) com informações e carregar para dentro do programa.     */
-/*********************************************************************************************/
 
+/****************************************************************************************************/
+/* carregaArvore                                                                                    */
+/* objetivo: Buscar o arquivo (oraculo.txt) com informações e carregar para árvore. 			    */
+/****************************************************************************************************/
 void carregaArvore( ARVORE ** arvore ){
 	
-	char linha [ORA_LARG_BUFFER_ARQ];
+	char linha [ORA_LARG_BUFFER_ARQ];														 // variável para leitura de linha do arquivo
 	
-	FILE *pont_arq = fopen(ORA_NOME_ARQ, "r");
+	FILE *pont_arq = fopen(ORA_NOME_ARQ, "r");												 // abre o arquivo para leitura
 	
 	if(confirma("\n Deseja carregar do arquivo (s/n)? ", NULL, NULL, "sn") != 's') {         // Confirmação de carregamento do arquivo (.txt)
-		printf("\n Operação cancelada!\n\n");                                                // Cancelamento da função carregaArvore
+		printf("\n Operação cancelada!\n\n");                                                // mostra mensagem de cancelamento e retorna para o menu
 		return;
 	}
 
-	if(pont_arq == NULL)                                                                     // Testa se a variável pont_arq é igual a NULL
+	if(pont_arq == NULL)                                                                     // Testa se foi retornado ponteiro para o arquivo (NULL = erro)
 	{
 		printf("\n Erro ao abrir o arquivo '%s'!\n", ORA_NOME_ARQ);                          // Mostra na tela a mensagem de erro caso não for possível carregar o arquivo (.txt)
 		return;
 	}
 
-	if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL) 
-		printf("\n Erro de Leitura!\n");
+	if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL) 								 // le a primeira linha do arquivo (cabeçalho)
+		printf("\n Erro de Leitura!\n");													 // se NULL, erro de leitura
 		
-	else if(strcmp(ORA_CABECALHO_ARQ, linha) != 0)
-		printf("\n Formato de Arquivo não Reconhecido!\n");
+	else if(strcmp(ORA_CABECALHO_ARQ, linha) != 0)											 // se a linha lida for diferente da constante cabeçalho
+		printf("\n Formato de Arquivo não Reconhecido!\n");									 // mostra erro
 		
-	else {
-		if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL) 
-			printf("\n Erro de Leitura!\n");
+	else {																					 // se linha foi lida e confere com o cabeçalho especificado
+		if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL) 							 // le a segunda linha que armazena o numero de acertos salso
+			printf("\n Erro de Leitura!\n");												 // mostra erro
 		
-		acertosOraculo = atoi(linha);
+		acertosOraculo = atoi(linha);														 // armazena na variavel o num de acertos carregado do arquivo
+																								// convertendo de string para inteiro
 		
-		criaArvore(arvore);
-	  	if(carregaRecursivo(pont_arq, arvore, 0) == 0)
-			printf("\n Arquivo carregado com sucesso!\n\n");                                 // Mensagem de que o arquivo (.txt) foi carregado para dentro do programa 
-			system ("pause");                                                                // Pausa a tela até pressionar algum botão do teclado
-			system ("cls");                                                                  // Limpa a tela
+		criaArvore(arvore);																	 // incializa a arvore preparando-a para a carga
+	  	if(carregaRecursivo(pont_arq, arvore, 0) == 0)										 // chama a rotina recursiva de carga do arquivo (linha por linha)
+	  																							// retorna zero caso a leitura ocorra com sucesso
+			mensagem("\n Arquivo carregado com sucesso!\n\n");                                 // Mensagem de que o arquivo (.txt) foi carregado para dentro da árvore
 	}
 	
-	fclose(pont_arq);
+	fclose(pont_arq);																		 // fecha o arquivo oraculo.txt
 }
 
-/*********************************************************************************************/
-/* carregaRecursivo                                                                          */
-/* objetivo: Carregar recursividade                                                          */
-/*********************************************************************************************/
 
+/***********************************************************************************************/
+/* carregaRecursivo                                                                            */
+/* objetivo: continua a leitura do arquivo aberto carregando as linhas para novos nós e folhas */
+/***********************************************************************************************/
 int carregaRecursivo ( FILE *pont_arq, ARVORE** r, int pos ){
-	char linha [ORA_LARG_BUFFER_ARQ];
-	fpos_t posArq;
-	fgetpos(pont_arq, &posArq);
+	char linha [ORA_LARG_BUFFER_ARQ];														// aloca variavel usada para buffer
+	fpos_t posArq;																			// variavel para armazenar a posicao do ponteiro do arquivo
+																								
+	fgetpos(pont_arq, &posArq);																// salva a posicao do ponteiro para retroceder, caso necessario
 		
-	if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL)
-		return 0;
+	if(fgets(linha, ORA_LARG_BUFFER_ARQ, pont_arq) == NULL)									// le a próxima linha do arquivo, caso fim de arquivo retorna sem erros
+		return 0;																			// retorna para o nível anterior
 	
-	if( linha [pos] != ORA_NIVEL_CHAR) {
-		fsetpos(pont_arq, &posArq);
-		return 0;
+	if( linha [pos] != ORA_NIVEL_CHAR) {													// o parametro 'pos' retorna o nivel esperado para leitura
+																								// caso o caracter na posicao 'pos' seja diferente do caracter esperado
+																								// é sinal que deve-se encerrar a recursividade, retornando 
+		fsetpos(pont_arq, &posArq);															// reposiciona o ponteiro para a linha anterior, pois a linha
+																								// não deve processada neste nivel
+		return 0;																			// retorna para o nível anterior
 	}
 	
-	for(int i=0; i<pos; i++) {
-		if(linha[i] != ORA_NIVEL_CHAR) {		
-			printf("Erro de formato na linha: '%s'!", linha);
-			return 1;
+	for(int i=0; i<pos; i++) {																// o parametro 'pos' retorna o nivel esperado para leitura
+																								// verifica se cada caracter desde o 1o até a posicao corresponde ao caracter
+																								// indicador de nivel
+		if(linha[i] != ORA_NIVEL_CHAR) {													// caso não corresponda com o caracter esperado
+			printf("Erro de formato na linha: '%s'!", linha);								// mostra erro
+			return 1;																		// retorna ao nível anterior com erro
 		}
 	}
 			
-	*r = alocaArvore();
+	*r = alocaArvore();																		// chama função que aloca um nó
 	
-	strncpy((*r)->info.informacao, linha+pos+1, ORA_LARG_INFO);
+	strncpy((*r)->info.informacao, linha+pos+1, ORA_LARG_INFO);								// copia a parte da linha descartando os caracteres de nível
 	
-	(*r)->info.informacao[strcspn((*r)->info.informacao, "\n")] = 0;
+	(*r)->info.informacao[strcspn((*r)->info.informacao, "\n")] = 0;						// elimina o \n do final da linha
 	
-	fflush(stdin);
+	if (carregaRecursivo(pont_arq, &((*r)->sube), pos+1) != 0)								// chama carregaRecursivo para esquerda, se retornar erro, retorna ao nivel anterior com erro
+		return 1;																			// retorna com erro
 		
-	if (carregaRecursivo(pont_arq, &((*r)->sube), pos+1) != 0)
-		return 1;
-		
-	if(carregaRecursivo(pont_arq, &((*r)->subd), pos+1) != 0)
-		return 1;
+	if(carregaRecursivo(pont_arq, &((*r)->subd), pos+1) != 0)								// chama carregaRecursivo para direita, se retornar erro, retorna ao nivel anterior com erro
+		return 1;																			// retorna com erro
 	
 }
 
-/*********************************************************************************************/
-/* ramificaArvore                                                                            */
-/* objetivo: Organizar a resposta de acordo com as perguntas dentro da árvore                */
-/*********************************************************************************************/
 
+/*************************************************************************************************/
+/* ramificaArvore                                                                                */
+/* objetivo: Transforma folha em nó, transferindo a resposta (folha) para nova folha e recebendo */
+/*    outra resposta em outra folha e armazenado a pergunta recebida no nó						 */
+/*************************************************************************************************/
 void ramificaArvore(ARVORE* posicao, char* msgNovo, char* msgPerguntaDiferenca) {
-	char novo [ORA_LARG_INFO];
-	char diferenca [ORA_LARG_INFO];
+	char novo [ORA_LARG_INFO];															// var para receber nova resposta
+	char diferenca [ORA_LARG_INFO];														// var para receber a pergunta que diferencia as respostas
 	
-	fflush(stdin);
-	printf(msgNovo);
-	fgets(novo, ORA_LARG_INFO, stdin);
-	novo[strcspn(novo, "\n")] = 0;
+	fflush(stdin);																		// limpa buffer do teclado
+	printf(msgNovo);																	// mostra msg que solicita nova informacao
+	fgets(novo, ORA_LARG_INFO, stdin);													// recebe nova informacao
+	novo[strcspn(novo, "\n")] = 0;														// elimina \n da resposta
 	
-	fflush(stdin);
-	printf(msgPerguntaDiferenca, novo, posicao->info.informacao);
-	fgets(diferenca, ORA_LARG_INFO, stdin);
-	diferenca[strcspn(diferenca, "\n")] = 0;
+	fflush(stdin);																		// limpa buffer do teclado
+	printf(msgPerguntaDiferenca, novo, posicao->info.informacao);						// faz pergunta q solicita pergunta q diferencie uma resposta da outra
+	fgets(diferenca, ORA_LARG_INFO, stdin);												// recebe a pergunta que diferencia as perguntas
+	diferenca[strcspn(diferenca, "\n")] = 0;											// remove \n da pergunta
 				
-	ARVORE * no = alocaArvore();
-	ARVORE * ant = alocaArvore();		
+	ARVORE * no = alocaArvore();														// aloca nó para armazenar nova informacao
+	ARVORE * ant = alocaArvore();														// aloca nó pra armazenar a informacao anterior
 
-	strcpy(ant->info.informacao, posicao->info.informacao);
-	strcpy(posicao->info.informacao, diferenca);
-	strcpy(no->info.informacao, novo);
+	strcpy(ant->info.informacao, posicao->info.informacao);								// armazena a informação anterior
+	strcpy(posicao->info.informacao, diferenca);										// armazena no lugar a pergunta que diferencia as informacoes
+	strcpy(no->info.informacao, novo);													// armazena a nova informacao
 
-	if (confirma(" Esta pergunta e verdadeira para '%s' (s/n)?", novo, NULL, "sn") == 's') {
-		posicao->sube = no;
-		posicao->subd = ant;
+	if (confirma(" Esta pergunta e verdadeira para '%s' (s/n)?", novo, NULL, "sn") == 's') { // se a pergunta referencia informacao nova?
+		posicao->sube = no;																		// salva a informacao nova a esquerda
+		posicao->subd = ant;																	// salva a ionformacao antiga a direita
 	}
-	else {
-		posicao->subd = no;
-		posicao->sube = ant;
+	else {																					// se a pergunta referencia informacao antiga?
+		posicao->subd = no;																		// salva a informacao nova a direita
+		posicao->sube = ant;																	// salva a informacao antiga a esquerda
 	}
-	system("cls");	
+	
 }
 
-	ARVORE * alocaArvore ( )
+
+/*************************************************************************************************/
+/* alocaArvore                                                                                   */
+/* objetivo: aloca novo nó, apontando esq e dir para NULL										 */
+/*************************************************************************************************/
+ARVORE * alocaArvore ( )
 {
-	ARVORE * no = ( ARVORE * ) malloc ( sizeof( ARVORE ));
+	ARVORE * no = ( ARVORE * ) malloc ( sizeof( ARVORE ));								// aloca memória para nó
 	
-	if( no == NULL) {
-		printf("\n### Estouro de Memória! ###\n");
-		exit (1);
+	if( no == NULL) {																	// sem memória?
+		printf("\n### Estouro de Memória! ###\n");										// mostra erro
+		exit (1);																		// encerra o prorama com erro
 	}
-	else {
-		no->sube = NULL;
-		no->subd = NULL;
+	else {																				// conseguiu alocar?
+		no->sube = NULL;																// aponta esq para NULL
+		no->subd = NULL;																// aponta dir para NULL
 	}
 	
-	return no;
+	return no;																			// retorna o nó inicializado
 }
+
 
 /*********************************************************************************************/
 /* salvaArvore                                                                               */
 /* objetivo: Salvar as informações da árvore atual dentro de um arquivo (.txt)               */
 /*********************************************************************************************/
-
 void salvaArvore( ARVORE * arvore ) {
 	
-	if(confirma("\n Deseja salvar a árvore atual (s/n)? ", NULL, NULL, "sn") != 's') {       // Confirmação de que deseja salvar a árvore
-		printf("\n Operação cancelada!\n\n");                                                // Cancelamento da função salvaArvore
-		system ("pause");                                                                    // Pausa a tela até pressionar algum botão do teclado
-		system ("cls");                                                                      // Limpa tela
-		return;
+	if(confirma("\n Deseja salvar a árvore atual (s/n)? ", NULL, NULL, "sn") != 's') {      // Confirmação de que deseja salvar a árvore
+		mensagem("\n Operação cancelada!\n\n");                                             // Mensagem de cancelado
+		return;																				// retorna
 	}
 		
-	FILE *pont_arq = fopen(ORA_NOME_ARQ, "w");
+	FILE *pont_arq = fopen(ORA_NOME_ARQ, "w");												// abre o arquivo oraculo.txt
 	
-	if(pont_arq == NULL) {
-		printf("\n Erro ao abrir o arquivo '%s'!\n");
-		return;
+	if(pont_arq == NULL) {																	// se não conseguiu abrir o arquivo
+		printf("\n Erro ao abrir o arquivo '%s'!\n");										// mostra erro
+		return;																				// retorna pro menu
 	}
 	
-	fprintf(pont_arq, "%s", ORA_CABECALHO_ARQ);
+	fprintf(pont_arq, "%s", ORA_CABECALHO_ARQ);												// salva o 'cabeçalho' no arquivo
 	
-	fprintf(pont_arq, "%d\n", acertosOraculo);
+	fprintf(pont_arq, "%d\n", acertosOraculo);												// salva número de acertos
 	
-	salvaRecursivo (pont_arq, arvore, 0);
+	salvaRecursivo (pont_arq, arvore, 0);													// salva recursivamente a árvore em linhas no arquivo
 	
-	fclose(pont_arq);
+	fclose(pont_arq);																		// fecha o arquivo
 	
-	printf("\n Árvore Salva com Sucesso!\n\n");
-	system ("pause");                                                                         // Pausa a tela até pressionar algum botão do teclado
-	system ("cls");                                                                           // Limpa a tela
+	mensagem("\n Árvore Salva com Sucesso!\n\n");											// mensagem de sucesso
+
 }
 
-/*********************************************************************************************/
-/* testaArvore                                                                               */
-/* objetivo: Iniciar o teste do programa com uma pergunta e aguardar a resposta do usuário.  */
-/*********************************************************************************************/
 
+/*************************************************************************************************/
+/* testaArvore                                                                                   */
+/* objetivo: Iniciar o teste do programa apresentando as perguntas (nós) até chegar em uma folha */
+/*   considerada resposta válida, caso o usuário negue a resposta, solicita nova informação e    */
+/*   pergunta que diferencie a informação aprsenada da nova										 */
+/*************************************************************************************************/
 void testaArvore ( ARVORE * arvore )
 {
-	ARVORE * posicao = arvore;
+	ARVORE * posicao = arvore;															// aponta ponteiro de navegação para a raiz da arvore
 	
-	printf("\n => Pense em algo e responda as perguntas com s=sim ou n=não: \n\n");
+	printf("\n => Pense em algo e responda as perguntas com s=sim ou n=não: \n\n");		// orienta o usuario quanto às perguntas 
 	
-	int numPerg = 0;		
-	while ( posicao->sube != NULL ) {
+	int numPerg = 0;																	// variavel contadora de perguntas
+	while ( posicao->sube != NULL ) {													// mantem-se nas perguntas enquanto não encontrar uma folha
 		
-		numPerg++;
+		numPerg++;																		// acrescenta contador
 		
-		printf(" %d) ", numPerg);
+		printf(" %d) ", numPerg);														// imprime o num da pergunta
 		
-		if (confirma("%s ", posicao->info.informacao, NULL, "sn")=='s')
-			posicao = posicao->sube;
-		else
-			posicao = posicao->subd;
+		if (confirma("%s ", posicao->info.informacao, NULL, "sn")=='s')					// se resp para a pergunta apresentada for 's', vai pra esq
+			posicao = posicao->sube;													// aponta para esq
+		else																			// se resp para pergunta apresentada for 'n', vai pra dir
+			posicao = posicao->subd;													// aponta para a direita
 			
 	}
 
-	if(confirma("\n Já sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL, "sn") == 's') {
-		printf(" \n Mais um ponto pra mim! :) \n\n");
-		acertosOraculo ++;
-		system("pause");                                                                      // Pausa a tela até pressionar algum botão do teclado
-		system("cls");                                                                        // Limpa a tela
+	// apresenta a resposta encontrada de acordo com as perguntas
+	// caso o usuário confirme a palavra apresentada...
+	if(confirma("\n Já sei! Voce pensou em '%s'. Acertei (s/n)? ", posicao->info.informacao, NULL, "sn") == 's') { 
+		acertosOraculo ++;																// acrescenta o contador de acertos do algoritmo
+		
+		mensagem(" \n Mais um ponto pra mim! :) \n\n");									// mostra mensagem de acerto
+	
 	}
-	else {
-		ramificaArvore(
-			posicao, 
-			" Ok, você venceu! Me diga em que estava pensando: ",
-			" Tá bom espertalhão! Faça uma pergunta que diferencie '%s' de '%s': "
+	else {																				// caso a palavra apresentada não seja a desejada...
+		ramificaArvore(																	// solicita a palavra pensada e pergunta que diferencie
+			posicao, 																	// as informações, recebendo a pergunta e armazenado-a, tranformando
+			" Ok, você venceu! Me diga em que estava pensando: ",						// a folha em nó e armazenando a informacao anterior em outra folha, assim
+			" Tá bom espertalhão! Faça uma pergunta que diferencie '%s' de '%s': "		// como com a informação recebida
 		);
 	}
 	
 }
 
+
 /*********************************************************************************************/
 /* iniciaArvore                                                                              */
-/* objetivo: Inserir informações na árvore.                                                  */
+/* objetivo: Recebe as duas primeiras informações e a pegunta diferenciadora, armazenando-as */
+/* 		na arvore																			 */
 /*********************************************************************************************/
-	
-	void iniciaArvore ( ARVORE** r )
+void iniciaArvore ( ARVORE** r )
 {
 	
-    ARVORE* no = alocaArvore();
+    ARVORE* no = alocaArvore();													// aloca novo nó
 
-	printf("\n[ Inicializando a Árvore ]\n");
+	printf("\n[ Inicializando a Árvore ]\n");									// mostra mensagem
 
-	fflush(stdin);
-	printf("\n Informe algo que esteja pensando: ");
-	fgets(no->info.informacao, ORA_LARG_INFO, stdin);
-	no->info.informacao[strcspn(no->info.informacao, "\n")] = 0;
+	fflush(stdin);																// limpa buffer
+	printf("\n Informe algo que esteja pensando: ");							// mostra mensagem, solicitando informação
+	fgets(no->info.informacao, ORA_LARG_INFO, stdin);							// recebe uma das informacoes
+	no->info.informacao[strcspn(no->info.informacao, "\n")] = 0;				// elimina o \n
 	
-	*r = no;
+	*r = no;																	// aponta para a raiz
 	
 	ramificaArvore(
-		no,
-		" Informe outra coisa que esteja pensando: ",
-		" Informe uma pergunta que diferencie '%s' de '%s': ");
+		no,																		// transforma uma informação em nova folha
+		" Informe outra coisa que esteja pensando: ",								// recebe nova informacao, transferindo as informacoes para	
+		" Informe uma pergunta que diferencie '%s' de '%s': ");						// as folhas e armazenado no nó inicial a pergunta
 		
-	printf("\n Árvore inicializada com Sucesso!\n\n");
+	mensagem("\n Árvore inicializada com Sucesso!\n\n");						// mostra mensagem de sucesso
+	
 }
+
 
 /*********************************************************************************************/
 /* salvaRecursivo                                                                            */
-/* objetivo: Salvar recursividade                                                            */
+/* objetivo: Salva recursivamente a árvore em linhas no arquivo apontado pelo ponteiro		 */
 /*********************************************************************************************/
-
 void salvaRecursivo ( FILE *pont_arq, ARVORE* r, int pos )
 {
-	pos ++;
-	if (r != NULL) {
-		for(int i=0; i<pos; i++)
+	pos ++;																		// contador de nivel
+	if (r != NULL) {															// se o ponteiro para o nó recebido <> NULL 
+		for(int i=0; i<pos; i++)												// grava n caracteres (correspondentes aos níveis)
 			fprintf(pont_arq, "%c", ORA_NIVEL_CHAR);
 			
-		fprintf(pont_arq, "%s\n", r->info.informacao);
+		fprintf(pont_arq, "%s\n", r->info.informacao);							// grava a informacao
 	
-    	salvaRecursivo(pont_arq, r->sube, pos);
-    	salvaRecursivo(pont_arq, r->subd, pos);
+    	salvaRecursivo(pont_arq, r->sube, pos);									// segue recursivamente para a esq
+    	salvaRecursivo(pont_arq, r->subd, pos);									// segue recursivamente para a dir
 	}
 }
+
 
 /*********************************************************************************************/
 /* imprimeArvore                                                                             */
 /* objetivo: Mostrar na tela a árvore de decisões criada até o momento.                      */
 /*********************************************************************************************/
-
 void imprimeArvore ( ARVORE* r, int pos )
 {
 	if (pos == 0)
@@ -459,7 +471,7 @@ void imprimeArvore ( ARVORE* r, int pos )
     	imprimeArvore(r->subd, pos+1);
 	}
 	if (pos == 0)
-		printf("\n");
+		mensagem("\n");
 }
 
 /*********************************************************************************************/
@@ -506,19 +518,38 @@ char confirma( char* pergunta, char* par1, char* par2, char* opcoes )
 	
 }
 
-void remove_recursivo( ARVORE **p, int pos ){	
-	if(pos == 0 && confirma("Deseja excluir a árvore em memória? ", NULL, NULL, "sn")=='n')
+/*********************************************************************************************/
+/* mensagem                                                                                  */
+/* objetivo: Exibe mensagem em tela e espera que o usuário press. alguma tecla               */
+/*********************************************************************************************/
+void mensagem( char* msg )
+{
+	printf(msg); 		                                							 // Exibe a mensagem
+	system ("pause");                                                             	 // Pausa a tela até pressionar alguma tecla
+	system ("cls");                                                                  // Limpa a tela
+	
+}
+
+
+/*********************************************************************************************/
+/* removeRecursivo                                                                           */
+/* objetivo: remove recursivamente a árvore, liberando a memória utilizada                   */
+/*********************************************************************************************/
+void removeRecursivo( ARVORE **p, int pos ){	
+	if(pos == 0 && confirma("\nDeseja excluir a árvore em memória? ", NULL, NULL, "sn")=='n')
 		return;
 		
 	if ((*p) != NULL) {	
-    	remove_recursivo(&(*p)->sube, pos+1);
-    	remove_recursivo(&(*p)->subd, pos+1);
+    	removeRecursivo(&(*p)->sube, pos+1);
+    	removeRecursivo(&(*p)->subd, pos+1);
 	}
 	free (*p);
 	*p = NULL;
 	
 	if(pos == 0)
-		printf("Árvore excluída com sucesso!");
+	{
+		mensagem("\nÁrvore excluída com sucesso!\n\n"); 		                                // Mensagem sucesso!
+	}
 		
  	return;
 }
