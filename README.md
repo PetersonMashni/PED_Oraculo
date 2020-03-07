@@ -1,5 +1,5 @@
 # PED_Oraculo
-Projeto de Estrutura de Dados
+Projeto de Estrutura de Dados - Análise e Desenv. de Sistemas - FADERGS
 
 - Nome do Projeto: PED - Oraculo;                                                          
 - Integrantes: Peterson Mashni, Luiz Martins, Felipe Johansson, Leonardo Bang;             
